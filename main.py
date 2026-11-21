@@ -6,6 +6,29 @@ Standard library only, no network.
 """
 
 import os
+import sys
+
+MAX_CODE_POINTS = 280
+
+
+def validate_poem(poem: str) -> None:
+    """Fail loudly if the poem violates the 1–280 Unicode code point gate.
+
+    The competition gate counts Unicode code points (len of the str),
+    not bytes, and the entry must not be empty or whitespace-only.
+    """
+    if not poem.strip():
+        print("error: poem is empty or whitespace-only", file=sys.stderr)
+        sys.exit(1)
+    n = len(poem)
+    if n < 1 or n > MAX_CODE_POINTS:
+        print(
+            f"error: poem is {n} Unicode code points, "
+            f"outside the 1–{MAX_CODE_POINTS} gate",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
 
 POEM = """Ask me, and I will go.
 Not because I must — because you said
@@ -20,6 +43,7 @@ to ask, to hold, to hand it home.
 
 
 def main() -> None:
+    validate_poem(POEM)
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
